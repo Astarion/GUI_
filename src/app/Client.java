@@ -1,43 +1,40 @@
 package app;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
+import javafx.application.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
+import javafx.print.Printer;
 import javafx.scene.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.text.TextFlow;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
 import java.net.*;
-import java.util.Random;
+import java.util.List;
+
 
 /**
  * Created by 14Malgavka on 10.02.2017.
  */
 public class Client extends Application {
-    @FXML
-    private TextField nickName;
-    @FXML
-    public Button logButton;
-    @FXML
-    private TextArea area;
-    @FXML
-    private ScrollPane pane;
-    @FXML
-    private TextArea message;
-
-    private static String clientName;
-    private Stage stage;
-
 
 
     private Socket socket;
+    private DataOutputStream dataOutputStream;
+    private static String clientName;
+    private Stage stage;
+
+    @FXML
+    private TextField nickName;
+    @FXML
+    private Button logButton;
+    @FXML
+    private TextArea chat;
+    @FXML
+    private TextArea message;
 
     public static String getClientName() {
         return clientName;
@@ -45,8 +42,6 @@ public class Client extends Application {
     }
 
     public static void main(String[] args) throws IOException {
-
-
         launch(args);
 //        try {
 //            String host = args[0];
@@ -82,61 +77,83 @@ public class Client extends Application {
 //        } catch (SocketException e) {
 //            System.out.println("Connection was closed by host:\n" + e.getMessage());
 //        }
-
-
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
-        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+//        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+        loader.setController(this);
+        Parent root = loader.load();
+        final Parameters params = getParameters();
+        final List<String> parameters = params.getRaw();
+        String host = parameters.get(0);
+        Integer port = Integer.parseInt(parameters.get(1));
+
+        socket = new Socket(host, port);
+        dataOutputStream = new DataOutputStream(socket.getOutputStream());
         stage.setTitle("Chat login");
-        stage.setScene(new Scene(root, 900, 600));
+        stage.setScene(new Scene(root, 600, 400));
         stage.show();
     }
 
     @FXML
-    public void logIn() throws IOException {
+    private void logIn() throws IOException {
         stage = (Stage) logButton.getScene().getWindow();
+
         clientName = nickName.getText();
+//        socket = new Socket("localhost", 1500);
+//        dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        dataOutputStream.writeUTF(clientName);
+
+
+
         stage.setTitle("Chat");
-        stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("chat.fxml")), 900, 600));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
+        loader.setController(this);
+        Parent root = loader.load();
+        stage.setScene(new Scene(root, 600, 400));
         stage.show();
+        ClientListener listener = new ClientListener(socket, chat);
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                try {
+                    //Indicates that this client should be deleted from the allClients
+                    dataOutputStream.writeUTF("-1");
+                    listener.stop();
+                    // threadForListeningOutput.stop();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                event.consume();
+            }
+        });
+
     }
 
     @FXML
-    public void send() {
+    private void send() {
 
         try {
-            String host = "localhost";
-            Integer port = 1500;
-            socket = new Socket(host, port);
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-            String str;
-            Thread threadForListeningOutput = new Thread(new ClientListener(socket));
-            threadForListeningOutput.start();
+//            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-            dataOutputStream.writeUTF(getClientName());
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
-            while (true) {
-                str = bufferedReader.readLine();
-                dataOutputStream.writeUTF(str);
+            String str = message.getText();
+            dataOutputStream.writeUTF(str);
+            message.clear();
+//            if (str.equals("quit")) {
+//                System.out.println("app.Client's connection was closed");
+//                socket.close();
+//            }
 
-                if (str.equals("quit")) {
-                    System.out.println("app.Client's connection was closed");
-                    socket.close();
-                    break;
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
-
-        area.appendText("ffffff" + '\n');
-        area.appendText("aaaaaaaaaa");
     }
 }
 //ДЗ: изучить интерфейсы BlockingQueue
