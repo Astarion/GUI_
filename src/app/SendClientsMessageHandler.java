@@ -27,7 +27,7 @@ public class SendClientsMessageHandler implements MessageHandler {
     @Override
     public String handle(String message, Socket socket) {
         try {
-            ArrayList<Pair<Socket, String>> clients = host.getAllClients();
+            ArrayList<Pair<Socket, String>> clients =Host.allClients; //host.getAllClients();
             DataOutputStream dataOutputStream;
             String clientName;
 
@@ -51,7 +51,7 @@ public class SendClientsMessageHandler implements MessageHandler {
 //                clientName="default";
 //            else
             clientName = clients.get(j).getValue();
-            if (message.equals("-1")) {
+           /* if (message.equals("-1")) {
                 clients.remove(j);
                 for (int i = 0; i < clients.size(); i++) {
 //                    if (i == j)
@@ -60,7 +60,17 @@ public class SendClientsMessageHandler implements MessageHandler {
                     dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
                     dataOutputStream.writeUTF(clientName + ' ' + "has left chat room");
                 }
-            } else {
+            }
+         else*/ if (message.equals("+1")) {
+                for (int i = 0; i < clients.size()&& clients.get(i).getValue()!=clientName; i++) {
+//                    if (i == j)
+//                        continue;
+                    Socket clientSocket = clients.get(i).getKey();
+                    dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                    dataOutputStream.writeUTF(clientName + ' ' + "has joined to chat room");
+                }
+            }
+            else {
                 for (int i = 0; i < clients.size(); i++) {
                     Socket clientSocket = clients.get(i).getKey();
 //                    if (clientSocket.isClosed()) {

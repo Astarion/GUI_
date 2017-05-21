@@ -21,7 +21,7 @@ public class Host implements Stoppable {
     private MessageHandlerFactory messageHandlerFactory;
     private volatile boolean isActive;
 //    private ArrayList<Socket> allClients = new ArrayList<Socket>();
-    private ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
+    static public ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
 
     public Host(Integer port, Channel channel, MessageHandlerFactory messageHandlerFactory) {
         this.port = port;
@@ -44,6 +44,9 @@ public class Host implements Stoppable {
                 String clientName = dataInputStream.readUTF();
                 channel.put(new Session(socket, messageHandlerFactory.createMessageHandler(this)));
                 allClients.add(new Pair<>(socket, clientName));
+                for(int i=0; i<allClients.size();i++){
+                System.out.println(allClients.get(i).getValue());
+                }
             }
         } catch (SocketException e) {
             System.out.println("Some problems: " + e.getMessage());

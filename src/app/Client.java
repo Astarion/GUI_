@@ -109,20 +109,23 @@ public class Client extends Application {
 
 
 
-        stage.setTitle("Chat");
+
+        stage.setTitle(clientName+"'s Chat");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
         loader.setController(this);
         Parent root = loader.load();
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
         ClientListener listener = new ClientListener(socket, chat);
+       dataOutputStream.writeUTF("+1");
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
                 try {
                     //Indicates that this client should be deleted from the allClients
-                    dataOutputStream.writeUTF("-1");
-                    listener.stop();
+                   // dataOutputStream.writeUTF("-1");
+                   // listener.stop();
+                  // listener.close();
                     // threadForListeningOutput.stop();
                     socket.close();
                 } catch (IOException e) {
