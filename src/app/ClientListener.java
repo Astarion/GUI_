@@ -18,15 +18,17 @@ public class ClientListener implements Stoppable {
 
     private Socket socket;
     private TextArea chat;
+    private TextArea online;
     private boolean isAlive;
     private Thread thread;
 
-    public ClientListener(Socket socket, TextArea chat) {
+    public ClientListener(Socket socket, TextArea chat, TextArea online) {
         this.socket = socket;
         this.chat = chat;
         this.thread = new Thread(this);
         this.isAlive = true;
         this.thread.start();
+        this.online=online;
     }
 
     @Override
@@ -36,7 +38,9 @@ public class ClientListener implements Stoppable {
             String message;
             while (!socket.isClosed()) {
                 message = dataInputStream.readUTF();
-                chat.appendText(message + "\n");
+                if (message.contains("&/?")) //users online
+                    online.appendText(message+ "\n");
+                else chat.appendText(message + "\n");
                 System.out.println(message);
 
             }

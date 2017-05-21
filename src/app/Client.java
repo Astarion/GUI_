@@ -35,6 +35,8 @@ public class Client extends Application {
     private TextArea chat;
     @FXML
     private TextArea message;
+    @FXML
+    private TextArea online;
 
     public static String getClientName() {
         return clientName;
@@ -116,7 +118,7 @@ public class Client extends Application {
         Parent root = loader.load();
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
-        ClientListener listener = new ClientListener(socket, chat);
+        ClientListener listener = new ClientListener(socket, chat, online);
        dataOutputStream.writeUTF("+1");
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override

@@ -42,11 +42,13 @@ public class Host implements Stoppable {
                 Socket socket = serverSocket.accept();
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                 String clientName = dataInputStream.readUTF();
-                channel.put(new Session(socket, messageHandlerFactory.createMessageHandler(this)));
+                MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
+                channel.put(new Session(socket, handler));
                 allClients.add(new Pair<>(socket, clientName));
-                for(int i=0; i<allClients.size();i++){
-                System.out.println(allClients.get(i).getValue());
-                }
+               // for(int i=0; i<allClients.size();i++){
+               // System.out.println(allClients.get(i).getValue());
+                    handler.handle("&/?"+clientName);//users online
+              // }
             }
         } catch (SocketException e) {
             System.out.println("Some problems: " + e.getMessage());

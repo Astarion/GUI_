@@ -95,7 +95,27 @@ public class SendClientsMessageHandler implements MessageHandler {
     }
 
     @Override
-    public String handle(String message) {
+    public String handle(String message) {  //users online
+        ArrayList<Pair<Socket, String>> clients =Host.allClients; //host.getAllClients();
+        try {
+            int i=0;
+            Socket clientSocket;
+            DataOutputStream dataOutputStream = null;
+        for (i = 0; i < clients.size()-1; i++) {
+            clientSocket = clients.get(i).getKey();
+            dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            dataOutputStream.writeUTF(message);
+        }
+            clientSocket = clients.get(i).getKey();
+            dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            for (i = 0; i < clients.size(); i++) {
+            String msg="&/?"+clients.get(i).getValue();
+            dataOutputStream.writeUTF(msg);
+            }
+        } catch (IOException e) {
+        e.printStackTrace();
+    }
         return null;
     }
+
 }
