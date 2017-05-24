@@ -48,6 +48,7 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //TODO size and allign
         stage = primaryStage;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
         loader.setController(this);
@@ -98,7 +99,17 @@ public class Client extends Application {
     @FXML
     private void send() {
         try {
-            String str = message.getText().replaceFirst("\n"," ");
+            String str = message.getText().replaceFirst("\n", "");
+            //TODO /n and whitespace
+            while (!str.equals("") && (str.charAt(0) == '\n' || str.charAt(0) == ' ')) {
+                if (str.charAt(0) == '\n')
+                str = str.replaceFirst("\n", "");
+                else str = str.replaceFirst(" ", "");
+            }
+            if (str.equals("")) {
+                message.clear();
+                return;
+            }
             dataOutputStream.writeUTF(str);
             message.clear();
         } catch (IOException e) {

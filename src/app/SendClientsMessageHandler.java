@@ -52,10 +52,10 @@ public class SendClientsMessageHandler implements MessageHandler {
                 }
 
             } else if (message.equals("\nAdd")) {
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                dataOutputStream.writeUTF("\n"+AllClientsName(socket));
                 for (int i = 0; i < clients.size(); i++) {
                     Socket clientSocket = host.getClientSocket(i);
-                    dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-                    dataOutputStream.writeUTF("\n"+AllClientsName(socket));
                     if (!clientSocket.isClosed() && clientSocket!= socket) {
                         dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
                         //dataOutputStream.writeUTF("\n"+clientName + " has joined chat room");
