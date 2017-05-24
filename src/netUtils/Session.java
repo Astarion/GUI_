@@ -29,11 +29,10 @@ public class Session implements Stoppable {
             inputStream = socket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
             String message;
+            messageHandler.handle("\nAdd", socket);
             while (!socket.isClosed()) {
                 message = dataInputStream.readUTF();
-//                if (message.equals("quit")) {
-//                    return;
-//                }
+
                 messageHandler.handle(message, socket);
             }
 
@@ -54,8 +53,8 @@ public class Session implements Stoppable {
             try {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 dataOutputStream.writeUTF("Server stopped");
-                messageHandler.handle("\n", socket);
-                socket.close();
+                messageHandler.handle("\nLeft", socket);
+//                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

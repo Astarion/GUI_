@@ -38,7 +38,7 @@ public class SendClientsMessageHandler implements MessageHandler {
             //TODO what if j>clients.size()
 
             clientName = host.getClientName(j);
-            if (message.equals("\n")) {
+            if (message.equals("\nLeft")) {
                 host.removeClient(j);
                 for (int i = 0; i < clients.size(); i++) {
                     Socket clientSocket = host.getClientSocket(i);
@@ -47,6 +47,14 @@ public class SendClientsMessageHandler implements MessageHandler {
                         dataOutputStream.writeUTF(clientName + " has left chat room");
                     }
 
+                }
+            } else if (message.equals("\nAdd")) {
+                for (int i = 0; i < clients.size(); i++) {
+                    Socket clientSocket = host.getClientSocket(i);
+                    if (!clientSocket.isClosed() && clientSocket!= socket) {
+                        dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                        dataOutputStream.writeUTF(clientName + " has joined chat room");
+                    }
                 }
             } else {
                 for (int i = 0; i < clients.size(); i++) {

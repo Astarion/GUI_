@@ -43,8 +43,8 @@ public class Host implements Stoppable {
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                 String clientName = dataInputStream.readUTF();
                 MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
-                channel.put(new Session(socket, handler));
                 allClients.add(new Pair<>(socket, clientName));
+                channel.put(new Session(socket, handler));
                 for (int i = 0; i < allClients.size(); i++) {
                     System.out.println(allClients.get(i).getValue());
 //                handler.handle("&/?" + clientName);//users online

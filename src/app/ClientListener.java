@@ -59,7 +59,7 @@ public class ClientListener implements Stoppable {
     @Override
     public void stop() {
         isAlive = false;
-        this.thread.interrupt();
+//        this.thread.interrupt();
     }
 
     public void close() {
