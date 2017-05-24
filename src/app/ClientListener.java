@@ -39,29 +39,22 @@ public class ClientListener implements Stoppable {
             while (!socket.isClosed()) {
                 if (dataInputStream.available() > 0) {
                     message = dataInputStream.readUTF();
-                    if (message.contains("\n")){
-                        String msg= message.replaceFirst("\n", "");
+                    if (message.charAt(0) == '\n') {
+//                        System.lineSeparator();
+                        String msg = message.replaceFirst("\n", "");
                         online.clear();
                         online.appendText(msg);
-                        //refreshOnline(msg);
-                        //String msg= message.replaceFirst("\n", "");;
-                       // chat.appendText(msg+"\n");
-                    }
-                    else
+                    } else
                         chat.appendText(message + "\n");
                     System.out.println(message);
                 }
-//                if (message.contains("&/?")) //users online
-//                    online.appendText(message + "\n");
-//                else
             }
 
         } catch (IOException e) {
-            // if(isAlive)
-            // isAlive = false;
+            if (isAlive)
+                isAlive = false;
             // thread.interrupt();
             e.printStackTrace();
-//            close();
         }
     }
 
@@ -71,33 +64,6 @@ public class ClientListener implements Stoppable {
 //        this.thread.interrupt();
     }
 
-    private void refreshOnline(String names){
-
-
-
-    }
-
-    public void close() {
-//
-//        ArrayList<Pair<Socket, String>> clients = Host.allClients;
-//        try {
-//            int j = 0;
-//            while (this.socket != clients.get(j).getKey() && j < clients.size()) {
-//                j++;
-//            }
-//            String clientName = clients.get(j).getValue();
-//            Host..remove(j);
-//            for (int i = 0; i < clients.size(); i++) {
-//                Socket clientSocket = clients.get(i).getKey();
-//                DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-//                dataOutputStream.writeUTF(clientName + ' ' + "has left chat room");
-//            }
-//            if (!socket.isClosed()) {
-//                socket.close(); // закрываем
-//
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
 }
+
+

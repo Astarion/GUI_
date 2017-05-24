@@ -82,12 +82,6 @@ public class Client extends Application {
             @Override
             public void handle(WindowEvent event) {
                 try {
-                    //Indicates that this client should be deleted from the allClients
-                    // listener.stop();
-                    // listener.close();
-                    // threadForListeningOutput.stop();
-//                    socket.shutdownInput();
-//                    socket.shutdownOutput();
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -99,13 +93,9 @@ public class Client extends Application {
     @FXML
     private void send() {
         try {
-            String str = message.getText().replaceFirst("\n", "");
-            //TODO /n and whitespace
-            while (!str.equals("") && (str.charAt(0) == '\n' || str.charAt(0) == ' ')) {
-                if (str.charAt(0) == '\n')
-                str = str.replaceFirst("\n", "");
-                else str = str.replaceFirst(" ", "");
-            }
+            String str = message.getText().replaceAll("^[\\s]*", "")
+                    .replaceAll("^[\n]*", "")
+                    .replaceAll("[\n]*$", "");
             if (str.equals("")) {
                 message.clear();
                 return;

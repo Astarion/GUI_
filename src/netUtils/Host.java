@@ -45,9 +45,11 @@ public class Host implements Stoppable {
                 MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
                 allClients.add(new Pair<>(socket, clientName));
                 channel.put(new Session(socket, handler,this));
-                for (int i = 0; i < allClients.size(); i++) {
-                    System.out.println(allClients.get(i).getValue());
-                }
+
+                //For debug only
+//                for (int i = 0; i < allClients.size(); i++) {
+//                    System.out.println(allClients.get(i).getValue());
+//                }
             }
         } catch (SocketException e) {
             System.out.println("Some problems: " + e.getMessage());
