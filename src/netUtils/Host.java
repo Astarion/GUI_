@@ -20,8 +20,8 @@ public class Host implements Stoppable {
     private ServerSocket serverSocket;
     private MessageHandlerFactory messageHandlerFactory;
     private volatile boolean isActive;
-//    private ArrayList<Socket> allClients = new ArrayList<Socket>();
-    static public ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
+    //    private ArrayList<Socket> allClients = new ArrayList<Socket>();
+    private ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
 
     public Host(Integer port, Channel channel, MessageHandlerFactory messageHandlerFactory) {
         this.port = port;
@@ -45,10 +45,10 @@ public class Host implements Stoppable {
                 MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
                 channel.put(new Session(socket, handler));
                 allClients.add(new Pair<>(socket, clientName));
-               // for(int i=0; i<allClients.size();i++){
-               // System.out.println(allClients.get(i).getValue());
-                    handler.handle("&/?"+clientName);//users online
-              // }
+                for (int i = 0; i < allClients.size(); i++) {
+                    System.out.println(allClients.get(i).getValue());
+//                handler.handle("&/?" + clientName);//users online
+                }
             }
         } catch (SocketException e) {
             System.out.println("Some problems: " + e.getMessage());
@@ -69,8 +69,21 @@ public class Host implements Stoppable {
 
     }
 
-    public ArrayList<Pair<Socket, String>> getAllClients()
-    {
+    public ArrayList<Pair<Socket, String>> getAllClients() {
         return allClients;
+    }
+
+    public String getClientName(int index)
+    {
+        return allClients.get(index).getValue();
+    }
+
+    public Socket getClientSocket(int index)
+    {
+        return allClients.get(index).getKey();
+    }
+
+    public void removeClient(int index) {
+        allClients.remove(index);
     }
 }

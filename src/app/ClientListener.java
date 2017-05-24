@@ -28,7 +28,7 @@ public class ClientListener implements Stoppable {
         this.thread = new Thread(this);
         this.isAlive = true;
         this.thread.start();
-        this.online=online;
+        this.online = online;
     }
 
     @Override
@@ -37,20 +37,22 @@ public class ClientListener implements Stoppable {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             String message;
             while (!socket.isClosed()) {
-                message = dataInputStream.readUTF();
-                if (message.contains("&/?")) //users online
-                    online.appendText(message+ "\n");
-                else chat.appendText(message + "\n");
-                System.out.println(message);
-
+                if (dataInputStream.available() > 0) {
+                    message = dataInputStream.readUTF();
+                    chat.appendText(message + "\n");
+                    System.out.println(message);
+                }
+//                if (message.contains("&/?")) //users online
+//                    online.appendText(message + "\n");
+//                else
             }
 
         } catch (IOException e) {
             // if(isAlive)
             // isAlive = false;
             // thread.interrupt();
-            // e.printStackTrace();
-           close();
+            e.printStackTrace();
+//            close();
         }
     }
 
@@ -60,27 +62,27 @@ public class ClientListener implements Stoppable {
         this.thread.interrupt();
     }
 
-    public  void close() {
-
-        ArrayList<Pair<Socket, String>> clients = Host.allClients;
-        try {
-            int j = 0;
-            while (this.socket != clients.get(j).getKey() && j < clients.size()) {
-                j++;
-            }
-            String clientName = clients.get(j).getValue();
-            Host.allClients.remove(j);
-            for (int i = 0; i < clients.size() ; i++) {
-                Socket clientSocket = clients.get(i).getKey();
-                DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
-                dataOutputStream.writeUTF(clientName + ' ' + "has left chat room");
-            }
-            if (!socket.isClosed()) {
-                socket.close(); // закрываем
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void close() {
+//
+//        ArrayList<Pair<Socket, String>> clients = Host.allClients;
+//        try {
+//            int j = 0;
+//            while (this.socket != clients.get(j).getKey() && j < clients.size()) {
+//                j++;
+//            }
+//            String clientName = clients.get(j).getValue();
+//            Host..remove(j);
+//            for (int i = 0; i < clients.size(); i++) {
+//                Socket clientSocket = clients.get(i).getKey();
+//                DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+//                dataOutputStream.writeUTF(clientName + ' ' + "has left chat room");
+//            }
+//            if (!socket.isClosed()) {
+//                socket.close(); // закрываем
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 }

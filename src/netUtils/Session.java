@@ -31,16 +31,20 @@ public class Session implements Stoppable {
             String message;
             while (!socket.isClosed()) {
                 message = dataInputStream.readUTF();
-                if (message.equals("quit")) {
-                    return;
-                }
+//                if (message.equals("quit")) {
+//                    return;
+//                }
                 messageHandler.handle(message, socket);
             }
 
 
         } catch (IOException e) {
-            System.out.println("Connection interrupted");
+            System.out.println("Connection interrupted in Session");
+
+            stop();
           // close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -50,6 +54,7 @@ public class Session implements Stoppable {
             try {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 dataOutputStream.writeUTF("Server stopped");
+                messageHandler.handle("\n", socket);
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -58,17 +63,17 @@ public class Session implements Stoppable {
         }
     }
 
-    public void close() {
-        ArrayList<Pair<Socket, String>> clients = Host.allClients;
-        int j=0;
-        while (this.socket != clients.get(j).getKey() && j < clients.size()) {
-            j++;
-        }
-        Host.allClients.remove(j); //убираем из списка
-        if (!socket.isClosed()) {
-            try {
-                socket.close(); // закрываем
-            } catch (IOException ignored) {}
-        }
-    }
+//    public void close() {
+//        ArrayList<Pair<Socket, String>> clients = Host.allClients;
+//        int j=0;
+//        while (this.socket != clients.get(j).getKey() && j < clients.size()) {
+//            j++;
+//        }
+//        Host.allClients.remove(j); //убираем из списка
+//        if (!socket.isClosed()) {
+//            try {
+//                socket.close(); // закрываем
+//            } catch (IOException ignored) {}
+//        }
+//    }
 }
