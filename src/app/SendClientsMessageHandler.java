@@ -40,7 +40,7 @@ public class SendClientsMessageHandler implements MessageHandler {
             clientName = host.getClientName(j);
             if (message.equals("\nLeft")) {
                 host.removeClient(j);
-                for (int i = 0; i < clients.size(); i++) {
+                for (int i = 0; i < clients.size() /*&& socket!=clients.get(i).getKey()*/; i++) {
                     Socket clientSocket = host.getClientSocket(i);
                     if (!clientSocket.isClosed()) {
                         dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());

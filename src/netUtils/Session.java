@@ -16,10 +16,12 @@ import java.util.ArrayList;
 public class Session implements Stoppable {
     private Socket socket;
     private MessageHandler messageHandler;
+    Host host;
 
-    public Session(Socket socket, MessageHandler messageHandler) {
+    public Session(Socket socket, MessageHandler messageHandler, Host host) {
         this.socket = socket;
         this.messageHandler = messageHandler;
+        this.host=host;
     }
 
     @Override
@@ -32,7 +34,9 @@ public class Session implements Stoppable {
             messageHandler.handle("\nAdd", socket);
             while (!socket.isClosed()) {
                 message = dataInputStream.readUTF();
-
+//                if (message.equals("quit")) {
+//                    return;
+//                }
                 messageHandler.handle(message, socket);
             }
 
@@ -54,7 +58,7 @@ public class Session implements Stoppable {
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 dataOutputStream.writeUTF("Server stopped");
                 messageHandler.handle("\nLeft", socket);
-//                socket.close();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
