@@ -98,7 +98,7 @@ public class Client extends Application {
     @FXML
     private void send() {
         try {
-            String str = message.getText();
+            String str = message.getText().replaceFirst("\n"," ");
             dataOutputStream.writeUTF(str);
             message.clear();
         } catch (IOException e) {

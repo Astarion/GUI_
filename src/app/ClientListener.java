@@ -39,7 +39,16 @@ public class ClientListener implements Stoppable {
             while (!socket.isClosed()) {
                 if (dataInputStream.available() > 0) {
                     message = dataInputStream.readUTF();
-                    chat.appendText(message + "\n");
+                    if (message.contains("\n")){
+                        String msg= message.replaceFirst("\n", "");
+                        online.clear();
+                        online.appendText(msg);
+                        //refreshOnline(msg);
+                        //String msg= message.replaceFirst("\n", "");;
+                       // chat.appendText(msg+"\n");
+                    }
+                    else
+                        chat.appendText(message + "\n");
                     System.out.println(message);
                 }
 //                if (message.contains("&/?")) //users online
@@ -60,6 +69,12 @@ public class ClientListener implements Stoppable {
     public void stop() {
         isAlive = false;
 //        this.thread.interrupt();
+    }
+
+    private void refreshOnline(String names){
+
+
+
     }
 
     public void close() {

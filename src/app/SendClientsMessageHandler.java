@@ -44,7 +44,9 @@ public class SendClientsMessageHandler implements MessageHandler {
                     Socket clientSocket = host.getClientSocket(i);
                     if (!clientSocket.isClosed()) {
                         dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                        //dataOutputStream.writeUTF("\n"+clientName + " has left chat room");
                         dataOutputStream.writeUTF(clientName + " has left chat room");
+                        dataOutputStream.writeUTF("\n"+AllClientsName(socket));
                     }
 
                 }
@@ -53,7 +55,9 @@ public class SendClientsMessageHandler implements MessageHandler {
                     Socket clientSocket = host.getClientSocket(i);
                     if (!clientSocket.isClosed() && clientSocket!= socket) {
                         dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+                        //dataOutputStream.writeUTF("\n"+clientName + " has joined chat room");
                         dataOutputStream.writeUTF(clientName + " has joined chat room");
+                        dataOutputStream.writeUTF("\n"+AllClientsName(socket));
                     }
                 }
             } else {
@@ -77,4 +81,14 @@ public class SendClientsMessageHandler implements MessageHandler {
         return null;
     }
 
+    public String AllClientsName(Socket socket){
+        String Names;
+        ArrayList<Pair<Socket, String>> clients = host.getAllClients();
+        Names=clients.get(0).getValue()+"\n";
+        for(int i=1;i<clients.size();i++){
+            Names+=clients.get(i).getValue()+"\n";
+        }
+
+        return Names;
+    }
 }
