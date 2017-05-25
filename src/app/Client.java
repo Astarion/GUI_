@@ -75,7 +75,13 @@ public class Client extends Application {
         stage = (Stage) logButton.getScene().getWindow();
         stage.setTitle(clientName + "'s Chat");
         stage.setScene(new Scene(root, 600, 400));
-        stage.show();
+        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+        if(dataInputStream.readUTF().equals("started"))
+            stage.show();
+        else {
+            stage.close();
+            return;
+        }
 
         ClientListener listener = new ClientListener(socket, chat, online);
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {

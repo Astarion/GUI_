@@ -43,8 +43,8 @@ public class Host implements Stoppable {
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                 String clientName = dataInputStream.readUTF();
                 MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
-                allClients.add(new Pair<>(socket, clientName));
-                channel.put(new Session(socket, handler,this));
+//                allClients.add(new Pair<>(socket, clientName));
+                channel.put(new Session(new Pair<>(socket, clientName), handler,this));
 
                 //For debug only
 //                for (int i = 0; i < allClients.size(); i++) {
@@ -84,9 +84,15 @@ public class Host implements Stoppable {
         return allClients.get(index).getKey();
     }
 
+    public void addClient(Pair<Socket, String> client)
+    {
+        allClients.add(client);
+    }
+
     public void removeClient(int index) {
         allClients.remove(index);
     }
+
     public void removeClient(Socket socket) {
         int j = 0;
         while (socket != allClients.get(j).getKey() && j < allClients.size()) {

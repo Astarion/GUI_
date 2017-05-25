@@ -14,30 +14,34 @@ import java.util.ArrayList;
  * Created by Alex on 17.02.2017.
  */
 public class Session implements Stoppable {
-    private Socket socket;
+    private Pair<Socket, String> client;
     private MessageHandler messageHandler;
-    Host host;
+    private Host host;
 
-    public Session(Socket socket, MessageHandler messageHandler, Host host) {
-        this.socket = socket;
+    public Session(Pair<Socket, String> client, MessageHandler messageHandler, Host host) {
+        this.client = client;
         this.messageHandler = messageHandler;
-        this.host=host;
+        this.host = host;
     }
 
     @Override
     public void run() {
         InputStream inputStream;
         try {
-            inputStream = socket.getInputStream();
+            host.addClient(client);
+            Socket clientSocket = client.getKey();
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            dataOutputStream.writeUTF("started");
+            inputStream = clientSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
             String message;
-            messageHandler.handle("\nAdd", socket);
-            while (!socket.isClosed()) {
+            messageHandler.handle("\nAdd", clientSocket);
+            while (!clientSocket.isClosed()) {
                 message = dataInputStream.readUTF();
 //                if (message.equals("quit")) {
 //                    return;
 //                }
-                messageHandler.handle(message, socket);
+                messageHandler.handle(message, clientSocket);
             }
 
 
@@ -45,7 +49,7 @@ public class Session implements Stoppable {
             System.out.println("Connection interrupted in Session");
 
             stop();
-          // close();
+            // close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,12 +57,12 @@ public class Session implements Stoppable {
 
     @Override
     public void stop() {
-        if (socket != null) {
+        if (client.getKey() != null) {
             try {
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                DataOutputStream dataOutputStream = new DataOutputStream(client.getKey().getOutputStream());
                 dataOutputStream.writeUTF("Server stopped");
-                messageHandler.handle("\nLeft", socket);
-                socket.close();
+                messageHandler.handle("\nLeft", client.getKey());
+                client.getKey().close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
