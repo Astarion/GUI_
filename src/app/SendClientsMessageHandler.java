@@ -24,43 +24,34 @@ public class SendClientsMessageHandler implements MessageHandler {
     }
 
     @Override
-    public String handle(String message, Socket socket) {
+    public String handle(String message, Pair<Socket,String> client) {
         try {
             ArrayList<Pair<Socket, String>> clients = host.getAllClients();
             DataOutputStream dataOutputStream;
-            String clientName;
+            String clientName = client.getValue();
+            Socket socket = client.getKey();
 
-            int j = 0;
-            while (socket != host.getClientSocket(j) && j < clients.size()) {
-                j++;
-            }
-
-            if (j > clients.size())
-                return "Error: No such client";
-
-            clientName = host.getClientName(j);
             switch (message) {
                 case "\nLeft": {
-                    host.removeClient(j);
                     for (int i = 0; i < clients.size(); i++) {
                         Socket clientSocket = host.getClientSocket(i);
                         if (!clientSocket.isClosed()) {
                             dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
                             dataOutputStream.writeUTF(clientName + " has left chat room");
-                            dataOutputStream.writeUTF("\n" + allClientsNames(socket));
+                            dataOutputStream.writeUTF("\n" + allClientsNames());
                         }
                     }
                     break;
                 }
                 case "\nAdd": {
                     dataOutputStream = new DataOutputStream(socket.getOutputStream());
-                    dataOutputStream.writeUTF("\n" + allClientsNames(socket));
+                    dataOutputStream.writeUTF("\n" + allClientsNames());
                     for (int i = 0; i < clients.size(); i++) {
                         Socket clientSocket = host.getClientSocket(i);
                         if (!clientSocket.isClosed() && clientSocket != socket) {
                             dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
                             dataOutputStream.writeUTF(clientName + " has joined chat room");
-                            dataOutputStream.writeUTF("\n" + allClientsNames(socket));
+                            dataOutputStream.writeUTF("\n" + allClientsNames());
                         }
                     }
                     break;
@@ -88,7 +79,7 @@ public class SendClientsMessageHandler implements MessageHandler {
         return null;
     }
 
-    private String allClientsNames(Socket socket) {
+    private String allClientsNames() {
         String names;
         ArrayList<Pair<Socket, String>> clients = host.getAllClients();
         names = clients.get(0).getValue() + "\n";

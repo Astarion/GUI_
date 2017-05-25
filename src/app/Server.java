@@ -21,7 +21,6 @@ public class Server {
             messageHandlerFactory.createMessageHandler();
 
             Integer port = Integer.parseInt(args[0]);
-            //TODO максимальное колличество клиентов и что делать с граничным
             Integer maxSession = Integer.parseInt(args[1]);
             Channel channel = new Channel(maxSession);
             Host host = new Host(port, channel, messageHandlerFactory);

@@ -51,6 +51,5 @@ public class ThreadPool {
     {
         for(int i = 0; i < allWorkers.size(); i++)
             ((WorkerThread)allWorkers.get(i)).stop();
-        //По всем воркерам и для всех них stop()
     }
 }

@@ -16,7 +16,7 @@
                   <Font size="22.0" />
                </font>
             </TextField>
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="161.0" layoutY="90.0" text="Enter your nickname:">
+            <Label fx:id="nickNameLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="161.0" layoutY="90.0" text="Enter your nickname:">
                <font>
                   <Font size="25.0" />
                </font>

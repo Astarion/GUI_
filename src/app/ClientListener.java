@@ -40,20 +40,17 @@ public class ClientListener implements Stoppable {
                 if (dataInputStream.available() > 0) {
                     message = dataInputStream.readUTF();
                     if (message.charAt(0) == '\n') {
-//                        System.lineSeparator();
                         String msg = message.replaceFirst("\n", "");
                         online.clear();
                         online.appendText(msg);
                     } else
                         chat.appendText(message + "\n");
-                    System.out.println(message);
                 }
             }
 
         } catch (IOException e) {
             if (isAlive)
                 isAlive = false;
-            // thread.interrupt();
             e.printStackTrace();
         }
     }
@@ -61,7 +58,6 @@ public class ClientListener implements Stoppable {
     @Override
     public void stop() {
         isAlive = false;
-//        this.thread.interrupt();
     }
 
 }

@@ -1,5 +1,6 @@
 package app;
 
+import javafx.util.Pair;
 import netUtils.MessageHandler;
 
 import java.net.Socket;
@@ -15,7 +16,8 @@ public class PrintMessageHandler implements MessageHandler {
     }
 
     @Override
-    public String handle(String message, Socket socket) {
+    public String handle(String message, Pair<Socket, String> client) {
         return null;
     }
+
 }

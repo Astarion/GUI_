@@ -1,5 +1,7 @@
 package netUtils;
 
+import javafx.util.Pair;
+
 import java.net.Socket;
 
 /**
@@ -7,6 +9,6 @@ import java.net.Socket;
  */
 public interface MessageHandler {
     public String handle(String message);
-    public String handle(String message, Socket socket);
+    public String handle(String message, Pair<Socket, String> client);
 
 }

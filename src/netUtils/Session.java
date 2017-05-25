@@ -8,7 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.ArrayList;
+
 
 /**
  * Created by Alex on 17.02.2017.
@@ -32,24 +32,18 @@ public class Session implements Stoppable {
             Socket clientSocket = client.getKey();
             DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
             dataOutputStream.writeUTF("started");
+
             inputStream = clientSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(inputStream);
             String message;
-            messageHandler.handle("\nAdd", clientSocket);
+            messageHandler.handle("\nAdd", client);
             while (!clientSocket.isClosed()) {
                 message = dataInputStream.readUTF();
-//                if (message.equals("quit")) {
-//                    return;
-//                }
-                messageHandler.handle(message, clientSocket);
+                messageHandler.handle(message, client);
             }
-
-
         } catch (IOException e) {
             System.out.println("Connection interrupted in Session");
-
             stop();
-            // close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,29 +52,8 @@ public class Session implements Stoppable {
     @Override
     public void stop() {
         if (client.getKey() != null) {
-            try {
-                DataOutputStream dataOutputStream = new DataOutputStream(client.getKey().getOutputStream());
-                dataOutputStream.writeUTF("Server stopped");
-                messageHandler.handle("\nLeft", client.getKey());
-                client.getKey().close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            host.removeClient(client.getKey());
+            messageHandler.handle("\nLeft", client);
         }
     }
-
-//    public void close() {
-//        ArrayList<Pair<Socket, String>> clients = Host.allClients;
-//        int j=0;
-//        while (this.socket != clients.get(j).getKey() && j < clients.size()) {
-//            j++;
-//        }
-//        Host.allClients.remove(j); //убираем из списка
-//        if (!socket.isClosed()) {
-//            try {
-//                socket.close(); // закрываем
-//            } catch (IOException ignored) {}
-//        }
-//    }
 }

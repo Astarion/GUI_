@@ -4,7 +4,6 @@ import javafx.application.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.print.Printer;
 import javafx.scene.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -28,6 +27,8 @@ public class Client extends Application {
     private Stage stage;
 
     @FXML
+    private Label nickNameLabel;
+    @FXML
     private TextField nickName;
     @FXML
     private Button logButton;
@@ -48,39 +49,64 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //TODO size and allign
         stage = primaryStage;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../clientGUI/login.fxml"));
         loader.setController(this);
         Parent root = loader.load();
         stage.setTitle("Chat login");
         stage.setScene(new Scene(root, 600, 400));
         stage.show();
+        stage.setResizable(false);
     }
 
     @FXML
     private void logIn() throws IOException {
+        clientName = nickName.getText();
+        clientName = clientName.replaceAll("^[\\s]*", "")
+                .replaceAll("^[\n]*", "")
+                .replaceAll("[\n]*$", "")
+                .replaceAll("[\\s]*$", "");
+        if (clientName.equals("")) {
+            nickName.clear();
+            return;
+        }
+
         final Parameters params = getParameters();
         final List<String> parameters = params.getRaw();
         String host = parameters.get(0);
         Integer port = Integer.parseInt(parameters.get(1));
         socket = new Socket(host, port);
         dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        clientName = nickName.getText();
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("../clientGUI/waiting.fxml"));
+////        loader.setController(this);
+//        Parent root = loader.load();
+//        stage = (Stage) logButton.getScene().getWindow();
+//        stage.setTitle("Waiting window");
+//        stage.setScene(new Scene(root, 600, 400));
+//        stage.show();
+
         dataOutputStream.writeUTF(clientName);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("chat.fxml"));
-        loader.setController(this);
-        Parent root = loader.load();
-        stage = (Stage) logButton.getScene().getWindow();
-        stage.setTitle(clientName + "'s Chat");
-        stage.setScene(new Scene(root, 600, 400));
-        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-        if(dataInputStream.readUTF().equals("started"))
-            stage.show();
-        else {
-            stage.close();
-            return;
+        try {
+            socket.setSoTimeout(10000);
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            if (dataInputStream.readUTF().equals("started")) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../clientGUI/chat.fxml"));
+                loader.setController(this);
+                Parent root = loader.load();
+                stage = (Stage) logButton.getScene().getWindow();
+                stage.setTitle("Chat room");
+                stage.setScene(new Scene(root, 600, 400));
+                stage.show();
+                stage.setResizable(false);
+            } else {
+                stage.close();
+                return;
+            }
+        } catch (SocketTimeoutException e) {
+            nickName.setVisible(false);
+            logButton.setVisible(false);
+            nickNameLabel.setText("Server is busy. \nPlease try again later.");
         }
 
         ClientListener listener = new ClientListener(socket, chat, online);
@@ -101,7 +127,8 @@ public class Client extends Application {
         try {
             String str = message.getText().replaceAll("^[\\s]*", "")
                     .replaceAll("^[\n]*", "")
-                    .replaceAll("[\n]*$", "");
+                    .replaceAll("[\n]*$", "")
+                    .replaceAll("[\\s]*$", "");
             if (str.equals("")) {
                 message.clear();
                 return;
