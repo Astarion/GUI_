@@ -38,6 +38,8 @@ public class Client extends Application {
     private TextArea message;
     @FXML
     private TextArea online;
+    @FXML
+    private Button send;
 
     public static String getClientName() {
         return clientName;
@@ -95,7 +97,7 @@ public class Client extends Application {
                 loader.setController(this);
                 Parent root = loader.load();
                 stage = (Stage) logButton.getScene().getWindow();
-                stage.setTitle("Chat room");
+                stage.setTitle(clientName+"'s Chat room");
                 stage.setScene(new Scene(root, 600, 400));
                 stage.show();
                 stage.setResizable(false);
@@ -136,7 +138,10 @@ public class Client extends Application {
             dataOutputStream.writeUTF(str);
             message.clear();
         } catch (IOException e) {
-            e.printStackTrace();
+            chat.appendText("Host stopped!");
+            message.setVisible(false);
+            send.setVisible(false);
+//            e.printStackTrace();
         }
     }
 }

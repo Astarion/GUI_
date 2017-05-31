@@ -52,6 +52,17 @@ public class Session implements Stoppable {
     @Override
     public void stop() {
         if (client.getKey() != null) {
+            if(!host.isActive())
+            {
+                try {
+                    DataOutputStream dataOutputStream = new DataOutputStream(client.getKey().getOutputStream());
+                    dataOutputStream.writeUTF("\nhost stopped");
+                    client.getKey().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             host.removeClient(client.getKey());
             messageHandler.handle("\nLeft", client);
         }

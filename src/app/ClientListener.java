@@ -39,6 +39,8 @@ public class ClientListener implements Stoppable {
             while (!socket.isClosed()) {
                 if (dataInputStream.available() > 0) {
                     message = dataInputStream.readUTF();
+//                    if(message.equals("\nhost stopped"))
+
                     if (message.charAt(0) == '\n') {
                         String msg = message.replaceFirst("\n", "");
                         online.clear();

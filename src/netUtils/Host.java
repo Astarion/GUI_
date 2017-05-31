@@ -21,7 +21,8 @@ public class Host implements Stoppable {
     private MessageHandlerFactory messageHandlerFactory;
     private volatile boolean isActive;
     //    private ArrayList<Socket> allClients = new ArrayList<Socket>();
-    private ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
+    private volatile ArrayList<Pair<Socket, String>> allClients = new ArrayList<>();
+    private Object lock = new Object();
 
     public Host(Integer port, Channel channel, MessageHandlerFactory messageHandlerFactory) {
         this.port = port;
@@ -44,7 +45,7 @@ public class Host implements Stoppable {
                 String clientName = dataInputStream.readUTF();
                 MessageHandler handler = messageHandlerFactory.createMessageHandler(this);
 //                allClients.add(new Pair<>(socket, clientName));
-                channel.put(new Session(new Pair<>(socket, clientName), handler,this));
+                channel.put(new Session(new Pair<>(socket, clientName), handler, this));
 
                 //For debug only
 //                for (int i = 0; i < allClients.size(); i++) {
@@ -74,30 +75,40 @@ public class Host implements Stoppable {
         return allClients;
     }
 
-    public String getClientName(int index)
-    {
+    public String getClientName(int index) {
         return allClients.get(index).getValue();
     }
 
-    public Socket getClientSocket(int index)
-    {
+    public Socket getClientSocket(int index) {
         return allClients.get(index).getKey();
     }
 
-    public void addClient(Pair<Socket, String> client)
-    {
-        allClients.add(client);
+    public void addClient(Pair<Socket, String> client) {
+        synchronized (lock) {
+            allClients.add(client);
+        }
     }
 
     public void removeClient(int index) {
-        allClients.remove(index);
+
+        synchronized (lock) {
+            allClients.remove(index);
+        }
     }
 
     public void removeClient(Socket socket) {
-        int j = 0;
-        while (socket != allClients.get(j).getKey() && j < allClients.size()) {
-            j++;
+        synchronized (lock) {
+            int j = 0;
+            while (socket != allClients.get(j).getKey() && j < allClients.size()) {
+                j++;
+            }
+            allClients.remove(j);
         }
-        allClients.remove(j);
+    }
+
+    public boolean isActive()
+    {
+        return isActive;
     }
 }
+//TODO снихронизация доступа к массиву клиентов
